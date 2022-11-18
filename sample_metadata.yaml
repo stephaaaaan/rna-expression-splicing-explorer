@@ -1,0 +1,96 @@
+CamK_1:
+  brainregion: crtx
+  type: excitatory
+CamK_2:
+  brainregion: crtx
+  type: excitatory
+CamK_3:
+  brainregion: crtx
+  type: excitatory
+CamK_4:
+  brainregion: crtx
+  type: excitatory
+CamK_W2:
+  brainregion: hipp
+  type: excitatory
+CamK_W3:
+  brainregion: hipp
+  type: excitatory
+CamK_W4:
+  brainregion: hipp
+  type: excitatory
+CamK_W5:
+  brainregion: hipp
+  type: excitatory
+Grik_W3:
+  brainregion: hipp
+  type: excitatory
+Grik_W4:
+  brainregion: hipp
+  type: excitatory
+Grik_W5:
+  brainregion: hipp
+  type: excitatory
+Grik_W6:
+  brainregion: hipp
+  type: excitatory
+PV_1:
+  brainregion: crtx
+  type: inhibitory
+PV_2:
+  brainregion: crtx
+  type: inhibitory
+PV_3:
+  brainregion: crtx
+  type: inhibitory
+PV_4:
+  brainregion: crtx
+  type: inhibitory
+SST_1:
+  brainregion: crtx
+  type: inhibitory
+SST_2:
+  brainregion: crtx
+  type: inhibitory
+SST_3:
+  brainregion: crtx
+  type: inhibitory
+SST_4:
+  brainregion: crtx
+  type: inhibitory
+SST_W1:
+  brainregion: hipp
+  type: inhibitory
+SST_W2:
+  brainregion: hipp
+  type: inhibitory
+SST_W3:
+  brainregion: hipp
+  type: inhibitory
+SST_W5:
+  brainregion: hipp
+  type: inhibitory
+Scnn_1:
+  brainregion: crtx
+  type: excitatory
+Scnn_2:
+  brainregion: crtx
+  type: excitatory
+Scnn_3:
+  brainregion: crtx
+  type: excitatory
+Scnn_4:
+  brainregion: crtx
+  type: excitatory
+VIP_W1:
+  brainregion: crtx
+  type: inhibitory
+VIP_W2:
+  brainregion: crtx
+  type: inhibitory
+VIP_W3:
+  brainregion: crtx
+  type: inhibitory
+VIP_W4:
+  brainregion: crtx
+  type: inhibitory
