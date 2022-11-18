@@ -204,6 +204,8 @@ class ui_window(QWidget):
     def geneid_changed(self) -> None:
         if self.gene_id.text() in self.gene_count_table.gene_symbol_to_ensembl.keys():
             self.input_field.setText(self.gene_count_table.gene_symbol_to_ensembl[self.gene_id.text()])
+        else:
+            self.input_field.setText('')
 
     def add_to_list_func(self) -> None:
         if self.input_field.text() not in self.gene_count_table.ensembl_to_gene_symbol.keys():
