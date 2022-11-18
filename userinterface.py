@@ -3,12 +3,12 @@ import os
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QCompleter,
+from PyQt5.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QVBoxLayout,
                              QFileDialog, QFrame, QGridLayout, QHBoxLayout,
                              QLabel, QLineEdit, QListWidget, QMessageBox,
                              QPushButton, QRadioButton, QWidget)
 
-from gene_table import gene_count_table
+from gene_table import gene_count_table, get_true_filename
 
 
 class ui_window(QWidget):
@@ -44,9 +44,9 @@ class ui_window(QWidget):
         self.input_field.textChanged.connect(self.input_changed)
         self.input_layout.addWidget(self.input_field,1,0)
         # 
-        self.gene_id = QLabel('')
-        self.gene_id.setStyleSheet("border: 1px solid black;")
-        self.gene_id.setMinimumWidth(100)
+        self.gene_id = QLineEdit()
+        self.gene_id.returnPressed.connect(self.add_to_list_func)
+        self.gene_id.textChanged.connect(self.geneid_changed)
         self.input_layout.addWidget(self.gene_id,1,1)
         # button add to list
         self.add_to_list = QPushButton('Add Gene',self)
@@ -71,13 +71,11 @@ class ui_window(QWidget):
         self.output_selection = QGridLayout()
         # ------------------------------ example picture ----------------------------- #
         self.overview = QLabel(self)
-        self.pixmap = QPixmap('overview_figure.png')
+        self.pixmap = QPixmap(get_true_filename('overview_figure.png'))
         self.pixmap_scaled = self.pixmap.scaled(700, 700, Qt.KeepAspectRatio)
         self.label = QLabel(self)
         self.label.setPixmap(self.pixmap_scaled)
-        #1608 × 719
-        self.mainwindowlayout.addWidget(self.label,0,4,6,5)
-        #self.show()
+        self.mainwindowlayout.addWidget(self.label,0,3,4,5)
         # ------------------------------- brain region ------------------------------- #
         self.brainregion_layout = QHBoxLayout()
         self.brainregion_button_group = QButtonGroup()
@@ -166,7 +164,33 @@ class ui_window(QWidget):
         self.save_btn = QPushButton('save')
         self.save_btn.clicked.connect(self.save)
         self.mainwindowlayout.addWidget(self.save_btn,7,3)
-
+        # --------------------------------- Citation --------------------------------- #
+        self.citationlayout = QVBoxLayout()
+        smallFont=QtGui.QFont()
+        smallFont.setPointSize(10)
+        self.original_study_label = QLabel('Original Study')
+        self.original_study_label.setFont(myFont)
+        self.citationlayout.addWidget(self.original_study_label)
+        urlLink="<a href=\"https://doi.org/10.1038/s41593-019-0465-5\">Furlanis, E., Traunmüller, L., Fucile, G. et al., Nat Neurosci 22 (2019)</a>" 
+        self.original_study = QLabel(urlLink)
+        self.original_study.setOpenExternalLinks(True)
+        self.original_study.setFont(smallFont)
+        self.citationlayout.addWidget(self.original_study)
+        self.original_data_label = QLabel('Raw Data')
+        self.original_data_label.setFont(myFont)
+        self.citationlayout.addWidget(self.original_data_label)
+        urlLink2="<a href=\"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE133291\">FASTA files</a>" 
+        self.original_data = QLabel(urlLink2)
+        self.original_data.setOpenExternalLinks(True)
+        self.original_data.setFont(smallFont)
+        self.citationlayout.addWidget(self.original_data)
+        smallerFont = smallFont
+        smallerFont.setPointSize(8)
+        smallerFont.setItalic(True)
+        self.copyright = QLabel('© Stephan Weißbach, 2022 - version 0.01')
+        self.copyright.setFont(smallerFont)
+        self.citationlayout.addWidget(self.copyright)
+        self.mainwindowlayout.addLayout(self.citationlayout,4,4)
     # ---------------------------------------------------------------------------- #
     #                                Button Methods                                #
     # ---------------------------------------------------------------------------- #
@@ -176,6 +200,10 @@ class ui_window(QWidget):
                 self.gene_id.setText(self.gene_count_table.ensembl_to_gene_symbol[self.input_field.text()])
         else:
             self.gene_id.setText('')
+    
+    def geneid_changed(self) -> None:
+        if self.gene_id.text() in self.gene_count_table.gene_symbol_to_ensembl.keys():
+            self.input_field.setText(self.gene_count_table.gene_symbol_to_ensembl[self.gene_id.text()])
 
     def add_to_list_func(self) -> None:
         if self.input_field.text() not in self.gene_count_table.ensembl_to_gene_symbol.keys():
@@ -324,9 +352,14 @@ class ui_window(QWidget):
         if self.grik.isChecked():
             selected_samples += ['Grik_W3', 'Grik_W4', 'Grik_W5', 'Grik_W6']
         df = self.gene_count_table.return_df(self.selected_genes,selected_samples)
-        df.to_csv(os.path.join(self.filepath,f'{self.filename.text()}.csv'))
+        df.to_csv(os.path.join(self.filepath,f'{self.filename.text()}.csv'),index=False)
         # --------------------------- empty all selections --------------------------- #
         self.selected_genes = []
         self.selected_genes_list.clear()
-        
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Export successful")
+        msg.setText(f"The file was exported to {os.path.join(self.filepath,f'{self.filename.text()}.csv')}")
+        msg.exec_()
+        print('here')
         
