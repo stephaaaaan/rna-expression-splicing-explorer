@@ -145,7 +145,7 @@ class ui_window(QWidget):
         msg = QMessageBox()
         msg.setText('Select export folder')
         msg.setIcon(QMessageBox.Information)
-        msg.setInformativeText('The generated file will be saved to this direktory.')
+        msg.setInformativeText('The gene count table will be saved in this folder..')
         msg.exec_()
         self.filepath_label = QLabel('Export Folder')
         self.filepath_label.setFont(myFont)
@@ -360,6 +360,4 @@ class ui_window(QWidget):
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Export successful")
         msg.setText(f"The file was exported to {os.path.join(self.filepath,f'{self.filename.text()}.csv')}")
-        msg.exec_()
-        print('here')
-        
+        msg.exec_()        
