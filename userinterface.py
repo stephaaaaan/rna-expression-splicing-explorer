@@ -214,7 +214,7 @@ class ui_window(QWidget):
         self.leftcolumn.addWidget(self.filepath_change,9,1)
         self.filename = QLineEdit('gene_count_data')
         self.leftcolumn.addWidget(self.filename,9,2)
-        self.save_btn = QPushButton('save')
+        self.save_btn = QPushButton('export')
         self.save_btn.clicked.connect(self.save)
         self.leftcolumn.addWidget(self.save_btn,9,3)
         # --------------------------------- Citation --------------------------------- #
@@ -452,3 +452,4 @@ class ui_window(QWidget):
         msg.setWindowTitle("Export successful")
         msg.setText(f"The file was exported to {os.path.join(self.filepath,f'{self.filename.text()}.csv')}")
         msg.exec_() 
+    
