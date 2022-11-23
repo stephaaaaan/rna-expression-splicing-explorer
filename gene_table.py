@@ -13,6 +13,7 @@ class gene_count_table:
     def __init__(self) -> None:
         self.count_table = pd.read_csv(get_true_filename('count_table.csv'))
         self.count_table.index = self.count_table['Geneid']
+        self.alternative_splicing_table = pd.read_csv(get_true_filename('all_samples_psi.csv'))
         with open(get_true_filename('sample_metadata.json'),'r') as f:
             self.sample_metadata = json.load(f)
         self.default_list = ['CamK_1',
@@ -40,3 +41,22 @@ class gene_count_table:
                 if col not in columns_selected: continue
                 df_list.append([col,gene,genesym,self.sample_metadata[col]['brainregion'],self.sample_metadata[col]['type'],val])
         return pd.DataFrame(df_list, columns=['Sample','ENSEMBL Gene ID', 'Gene Symbol','Brainregion','Celltype','gene count (counts per million)'])
+    
+    def return_alternative_splicing_df(self, parent, gene_list, columns_selected, splice_events_types_selected) -> pd.DataFrame:
+        df_list = []
+        for gene in gene_list:
+            gene_alternative_splice_events = self.alternative_splicing_table[(self.alternative_splicing_table['Ensembl Gene ID'] == gene) & (self.alternative_splicing_table['splicing_event'].isin(splice_events_types_selected))]
+            if gene_alternative_splice_events.shape[0] < 1:
+                parent.no_splice_events(gene)
+                continue
+            # Ensembl Gene ID	splicing_event	chr	bp_position
+            for _,splice_event in gene_alternative_splice_events.iterrows():
+                genesym = self.ensembl_to_gene_symbol[gene]
+                splice_event_type = splice_event['splicing_event']
+                chr = splice_event['chr']
+                bp_position = splice_event['bp_position']
+                strand = splice_event['strand']
+                for col, val in zip(splice_event.index,splice_event):
+                    if col not in columns_selected: continue
+                    df_list.append([col,gene,genesym,self.sample_metadata[col]['brainregion'],self.sample_metadata[col]['type'],splice_event_type, chr, bp_position, strand, val])
+        return pd.DataFrame(df_list, columns=['Sample','ENSEMBL Gene ID', 'Gene Symbol','Brainregion','Celltype','splice event type', 'chr', 'event position', 'strand','psi'])

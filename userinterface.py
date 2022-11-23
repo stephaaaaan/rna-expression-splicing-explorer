@@ -25,6 +25,8 @@ class ui_window(QWidget):
         # define layout
         self.mainwindowlayout = QGridLayout()
         self.setLayout(self.mainwindowlayout)
+        self.leftcolumn = QGridLayout()
+        self.rightcolumn = QGridLayout()
         # ---------------------------------------------------------------------------- #
         #                                    Widgets                                   #
         # ---------------------------------------------------------------------------- #
@@ -53,29 +55,33 @@ class ui_window(QWidget):
         self.add_to_list.clicked.connect(self.add_to_list_func)
         self.input_layout.addWidget(self.add_to_list,1,2)
         self.input_layout.setVerticalSpacing(10)
-        self.mainwindowlayout.addLayout(self.input_layout,0,0,1,3)
+        self.leftcolumn.addLayout(self.input_layout,0,0,1,3)
         # ---------------------------- gene selection list --------------------------- #
         self.selected_genes_list_desc = QLabel('Selected Genes')
         self.selected_genes_list_desc.setFont(myFont)
-        self.mainwindowlayout.addWidget(self.selected_genes_list_desc,1,0)
+        self.leftcolumn.addWidget(self.selected_genes_list_desc,1,0)
         # list showing selection
         self.selected_genes_list = QListWidget()
-        self.mainwindowlayout.addWidget(self.selected_genes_list,2,0,2,2)
+        self.leftcolumn.addWidget(self.selected_genes_list,2,0,2,2)
         self.selected_genes_list.clicked.connect(self.activate_delete)
         # button delete
         self.delete = QPushButton('Delete', self)
         self.delete.setEnabled(False)
         self.delete.clicked.connect(self.delete_item)
-        self.mainwindowlayout.addWidget(self.delete,2,2,1,1)
+        self.leftcolumn.addWidget(self.delete,2,2,1,1)
         # output selection
         self.output_selection = QGridLayout()
         # ------------------------------ example picture ----------------------------- #
         self.overview = QLabel(self)
         self.pixmap = QPixmap(get_true_filename('overview_figure.png'))
         self.pixmap_scaled = self.pixmap.scaled(700, 700, Qt.KeepAspectRatio)
-        self.label = QLabel(self)
-        self.label.setPixmap(self.pixmap_scaled)
-        self.mainwindowlayout.addWidget(self.label,0,3,4,5)
+        self.overview.setPixmap(self.pixmap_scaled)
+        self.rightcolumn.addWidget(self.overview,0,0,2,3)
+        self.splice_graph = QLabel()
+        self.pixmap_splice_graph = QPixmap(get_true_filename('splice_graphs.png'))
+        self.pixmap_splice_graph_scaled = self.pixmap_splice_graph.scaled(700, 700, Qt.KeepAspectRatio)
+        self.splice_graph.setPixmap(self.pixmap_splice_graph_scaled)
+        self.rightcolumn.addWidget(self.splice_graph,3,0,2,3)
         # ------------------------------- brain region ------------------------------- #
         self.brainregion_layout = QHBoxLayout()
         self.brainregion_button_group = QButtonGroup()
@@ -116,7 +122,7 @@ class ui_window(QWidget):
         self.excitatory_select.clicked.connect(self.radiobutton_pressed)
         self.celltype_layout.addWidget(self.excitatory_select)
         self.output_selection.addLayout(self.celltype_layout,1,0)
-        self.mainwindowlayout.addLayout(self.output_selection,4,0,1,3)
+        self.leftcolumn.addLayout(self.output_selection,4,0,1,3)
         # ---------------------------------- samples --------------------------------- #
         self.samples_layout = QGridLayout()
         self.samples_label = QLabel('Samples')
@@ -140,7 +146,54 @@ class ui_window(QWidget):
         self.vip = QCheckBox('VIP')
         self.vip.setChecked(True)
         self.samples_layout.addWidget(self.vip,1,3)
-        self.mainwindowlayout.addLayout(self.samples_layout,5,0,1,3)
+        self.leftcolumn.addLayout(self.samples_layout,5,0,1,3)
+        # ---------------------------------------------------------------------------- #
+        #                             alternative splicing                             #
+        # ---------------------------------------------------------------------------- #
+        # ---------------------------- chose analysis type --------------------------- #
+        self.switch_gene_expression_layout = QHBoxLayout()
+        self.switch_gene_expression_label = QLabel('Analysis Type')
+        self.switch_gene_expression_label.setFont(myFont)
+        self.switch_gene_expression_layout.addWidget(self.switch_gene_expression_label)
+        self.switch_gene_expression = QButtonGroup()
+        self.gene_expression = QRadioButton('gene expression')
+        self.switch_gene_expression.addButton(self.gene_expression)
+        self.gene_expression.clicked.connect(self.switch_gene_expression_clicked)
+        self.gene_expression.setChecked(True)
+        self.switch_gene_expression_layout.addWidget(self.gene_expression)
+        self.alternative_splicing = QRadioButton('alternative splicing')
+        self.switch_gene_expression.addButton(self.alternative_splicing)
+        self.alternative_splicing.clicked.connect(self.switch_gene_expression_clicked)
+        self.switch_gene_expression_layout.addWidget(self.alternative_splicing)
+        self.leftcolumn.addLayout(self.switch_gene_expression_layout,6,0)
+        # -------------------- select splicing events of interest -------------------- #
+        self.splicing_events_layout = QGridLayout()
+        self.splicing_events_label = QLabel('Splicing Events')
+        self.splicing_events_label.setFont(myFont)
+        self.splicing_events_layout.addWidget(self.splicing_events_label,0,0)
+        self.ie= QCheckBox('Including Exon (IE)')
+        self.splicing_events_layout.addWidget(self.ie,0,1)
+        self.se = QCheckBox('Skipping Exon (SE)')
+        self.splicing_events_layout.addWidget(self.se,0,2)
+        self.me = QCheckBox('Mutually exclusive exon (MX)')
+        self.splicing_events_layout.addWidget(self.me,0,3)
+        
+        self.ri = QCheckBox('Retained Intron (RI)')
+        self.splicing_events_layout.addWidget(self.ri,1,1)
+        self.a5= QCheckBox("Alternative 5' splice-site (A5)")
+        self.splicing_events_layout.addWidget(self.a5,1,2)
+        self.a3 = QCheckBox("Alternative 3' splice-site (A3)")
+        self.splicing_events_layout.addWidget(self.a3,1,3)
+        self.af = QCheckBox('Alternative first exon (AF)')
+        self.splicing_events_layout.addWidget(self.af,2,1)
+        self.splicing_events_checkboxes = [self.ie,self.se,self.me,self.ri,self.a5,self.a3,self.af]
+        for checkbox in self.splicing_events_checkboxes:
+            checkbox.setChecked(True)
+            checkbox.setCheckable(False)
+            checkbox.setToolTip("Select Analysis Type 'alternative splicing'")
+        self.leftcolumn.addLayout(self.splicing_events_layout,7,0,1,4)
+
+
         # ---------------------------------- export ---------------------------------- #
         msg = QMessageBox()
         msg.setText('Select export folder')
@@ -149,21 +202,21 @@ class ui_window(QWidget):
         msg.exec_()
         self.filepath_label = QLabel('Export Folder')
         self.filepath_label.setFont(myFont)
-        self.mainwindowlayout.addWidget(self.filepath_label,6,0)
+        self.leftcolumn.addWidget(self.filepath_label,8,0)
         self.filename_label = QLabel('Filename')
         self.filename_label.setFont(myFont)
-        self.mainwindowlayout.addWidget(self.filename_label,6,2)
+        self.leftcolumn.addWidget(self.filename_label,8,2)
         self.filepath = QFileDialog.getExistingDirectory()
         self.filepath_show = QLabel(self.filepath)
-        self.mainwindowlayout.addWidget(self.filepath_show,7,0)
+        self.leftcolumn.addWidget(self.filepath_show,9,0)
         self.filepath_change = QPushButton('change')
         self.filepath_change.clicked.connect(self.change_filepath)
-        self.mainwindowlayout.addWidget(self.filepath_change,7,1)
+        self.leftcolumn.addWidget(self.filepath_change,9,1)
         self.filename = QLineEdit('gene_count_data')
-        self.mainwindowlayout.addWidget(self.filename,7,2)
+        self.leftcolumn.addWidget(self.filename,9,2)
         self.save_btn = QPushButton('save')
         self.save_btn.clicked.connect(self.save)
-        self.mainwindowlayout.addWidget(self.save_btn,7,3)
+        self.leftcolumn.addWidget(self.save_btn,9,3)
         # --------------------------------- Citation --------------------------------- #
         self.citationlayout = QVBoxLayout()
         smallFont=QtGui.QFont()
@@ -187,10 +240,12 @@ class ui_window(QWidget):
         smallerFont = smallFont
         smallerFont.setPointSize(8)
         smallerFont.setItalic(True)
-        self.copyright = QLabel('© Stephan Weißbach, 2022 - version 0.01')
+        self.copyright = QLabel('© Stephan Weißbach, 2022 - version 0.02')
         self.copyright.setFont(smallerFont)
         self.citationlayout.addWidget(self.copyright)
-        self.mainwindowlayout.addLayout(self.citationlayout,4,4)
+        self.rightcolumn.addLayout(self.citationlayout,6,2)
+        self.mainwindowlayout.addLayout(self.leftcolumn,0,0)
+        self.mainwindowlayout.addLayout(self.rightcolumn,0,1)
     # ---------------------------------------------------------------------------- #
     #                                Button Methods                                #
     # ---------------------------------------------------------------------------- #
@@ -299,6 +354,23 @@ class ui_window(QWidget):
         self.filepath = QFileDialog.getExistingDirectory()
         self.filepath_show.setText(self.filepath)
     
+    def switch_gene_expression_clicked(self):
+        to_set = False if self.gene_expression.isChecked() else True
+        for checkbox in self.splicing_events_checkboxes:
+            checkbox.setCheckable(to_set)
+            checkbox.setChecked(True)
+            if to_set:
+                checkbox.setToolTip('')
+            else:
+                checkbox.setToolTip("Select Analysis Type 'alternative splicing'")
+    
+    def no_splice_events(self,gene):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("No splice-variants")
+        msg.setText(f'No splice-variants for {gene} ({self.gene_count_table.ensembl_to_gene_symbol[gene]}) with your current selection.')
+        msg.exec_()
+
     def save(self):
         # ----------------------- check if any sample selected ----------------------- #
         any_sample_selected = False
@@ -353,13 +425,30 @@ class ui_window(QWidget):
             selected_samples += ['VIP_W1', 'VIP_W2', 'VIP_W3', 'VIP_W4']
         if self.grik.isChecked():
             selected_samples += ['Grik_W3', 'Grik_W4', 'Grik_W5', 'Grik_W6']
-        df = self.gene_count_table.return_df(self.selected_genes,selected_samples)
-        df.to_csv(os.path.join(self.filepath,f'{self.filename.text()}.csv'),index=False)
+        if self.gene_expression.isChecked():
+            df = self.gene_count_table.return_df(self.selected_genes,selected_samples)
+            df.to_csv(os.path.join(self.filepath,f'{self.filename.text()}.csv'),index=False)
+                
+        else:
+            selected_splice_events = []
+            for button in self.splicing_events_checkboxes:
+                if not button.isChecked(): continue
+                selected_splice_events.append(button.text().split('(')[1][:-1])
+            if len(selected_splice_events) == 0:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Critical)
+                msg.setWindowTitle("No Splice Events selected")
+                msg.setText(f"Select at least one splice event for export.")
+                msg.exec_()
+                return
+            df = self.gene_count_table.return_alternative_splicing_df(self,self.selected_genes,selected_samples,selected_splice_events)
+            df.to_csv(os.path.join(self.filepath,f'{self.filename.text()}.csv'),index=False)
         # --------------------------- empty all selections --------------------------- #
         self.selected_genes = []
         self.selected_genes_list.clear()
+        # -------------------- message to inform successful export ------------------- #
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Export successful")
         msg.setText(f"The file was exported to {os.path.join(self.filepath,f'{self.filename.text()}.csv')}")
-        msg.exec_()        
+        msg.exec_() 
