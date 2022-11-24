@@ -1,6 +1,7 @@
 import os
 
 from PyQt5 import QtGui, QtWebEngineWidgets
+from PyQt5.QtSvg import QSvgWidget
 import plotly.express as px
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
@@ -16,7 +17,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QPushButton,
     QRadioButton,
-    QWidget,
+    QWidget, 
 )
 
 from gene_table import get_true_filename, gene_count_table
@@ -88,16 +89,29 @@ class ui_window(QWidget):
         # ------------------------------ example picture ----------------------------- #
         self.overview = QLabel(self)
         self.pixmap = QPixmap(get_true_filename("overview_figure.png"))
-        self.pixmap_scaled = self.pixmap.scaled(700, 700, Qt.KeepAspectRatio)
+        self.pixmap_scaled = self.pixmap.scaled(735, 480, Qt.KeepAspectRatio)
         self.overview.setPixmap(self.pixmap_scaled)
         self.rightcolumn.addWidget(self.overview, 0, 0, 2, 3)
-        self.splice_graph = QLabel()
-        self.pixmap_splice_graph = QPixmap(get_true_filename("splice_graphs.png"))
-        self.pixmap_splice_graph_scaled = self.pixmap_splice_graph.scaled(
-            700, 700, Qt.KeepAspectRatio
-        )
-        self.splice_graph.setPixmap(self.pixmap_splice_graph_scaled)
+        # ------------------------------- splice graph ------------------------------- #
+        self.splice_graph = QSvgWidget(get_true_filename("splicegraphs_5'.svg"))
+        self.splice_graph.setFixedSize(735,480)
         self.rightcolumn.addWidget(self.splice_graph, 3, 0, 2, 3)
+        self.splicegraph_switch = QButtonGroup()
+        self.splicegraph_layout = QHBoxLayout()
+        self.splicegraph_switch_label = QLabel('Choose Strand')
+        self.splicegraph_switch_label.setFont(myFont)
+        self.splicegraph_layout.addWidget(self.splicegraph_switch_label)
+        self.five_dash = QRadioButton("5' direction")
+        self.five_dash.setChecked(True)
+        self.five_dash.clicked.connect(self.change_splicegraph)
+        self.splicegraph_switch.addButton(self.five_dash)
+        self.splicegraph_layout.addWidget(self.five_dash)
+        self.three_dash = QRadioButton("3' direction")
+        self.three_dash.clicked.connect(self.change_splicegraph)
+        self.splicegraph_switch.addButton(self.three_dash)
+        self.splicegraph_layout.addWidget(self.three_dash)
+        self.rightcolumn.addLayout(self.splicegraph_layout,5,0)
+        
         # ------------------------------- brain region ------------------------------- #
         self.brainregion_layout = QHBoxLayout()
         self.brainregion_button_group = QButtonGroup()
@@ -315,6 +329,16 @@ class ui_window(QWidget):
 
     def activate_delete(self) -> None:
         self.delete.setEnabled(True)
+    
+    def change_splicegraph(self) -> None:
+        self.rightcolumn.itemAtPosition(3,0).widget().deleteLater()
+        if self.five_dash.isChecked():
+            
+            self.splice_graph = QSvgWidget(get_true_filename("splicegraphs_5'.svg"))
+        else:
+            self.splice_graph = QSvgWidget(get_true_filename("splicegraphs_3'.svg"))
+        self.splice_graph.setFixedSize(735,480)
+        self.rightcolumn.addWidget(self.splice_graph, 3, 0, 2, 3)
 
     def radiobutton_pressed(self) -> None:
         if self.inhibitory_select.isChecked() and self.crtx_select.isChecked():
