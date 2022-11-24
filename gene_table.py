@@ -64,6 +64,9 @@ class gene_count_table:
         self.gene_symbol_to_ensembl = {
             v: k for k, v in self.ensembl_to_gene_symbol.items()
         }
+    
+    def return_data_df(self, gene_list: list, columns_selected: list) -> pd.DataFrame:
+        return self.count_table.loc[gene_list,columns_selected]
 
     def return_df(self, gene_list: list, columns_selected: list = []) -> pd.DataFrame:
         if columns_selected == []:

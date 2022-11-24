@@ -1,6 +1,7 @@
 import os
 
-from PyQt5 import QtGui
+from PyQt5 import QtGui, QtWebEngineWidgets
+import plotly.express as px
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
@@ -249,6 +250,12 @@ class ui_window(QWidget):
         self.rightcolumn.addLayout(self.citationlayout, 6, 2)
         self.mainwindowlayout.addLayout(self.leftcolumn, 0, 0)
         self.mainwindowlayout.addLayout(self.rightcolumn, 0, 1)
+        # ---------------------------------------------------------------------------- #
+        #                            gene expression heatmap                           #
+        # ---------------------------------------------------------------------------- #
+        self.browser = QtWebEngineWidgets.QWebEngineView(self)
+        self.browser.setMinimumSize(500,100)
+        self.mainwindowlayout.addWidget(self.browser,0,2)
 
     # ---------------------------------------------------------------------------- #
     #                                Button Methods                                #
@@ -296,6 +303,7 @@ class ui_window(QWidget):
             )
         self.input_field.setText("")
         self.gene_id.setText("")
+        self.plotly_graph_update()
 
     def delete_item(self) -> None:
         idx = self.selected_genes_list.currentRow()
@@ -303,6 +311,7 @@ class ui_window(QWidget):
         _ = self.selected_genes_list.takeItem(idx)
         self.selected_genes.remove(gene)
         self.delete.setEnabled(False)
+        self.plotly_graph_update()
 
     def activate_delete(self) -> None:
         self.delete.setEnabled(True)
@@ -376,6 +385,7 @@ class ui_window(QWidget):
             ]:
                 button.setCheckable(True)
                 button.setChecked(True)
+        self.plotly_graph_update()
 
     def switch_gene_expression_clicked(self):
         to_set = False if self.gene_expression.isChecked() else True
@@ -397,6 +407,19 @@ class ui_window(QWidget):
             f"No splice-variants for {gene} ({self.gene_count_table.ensembl_to_gene_symbol[gene]}) with your current selection."
         )
         msg.exec_()
+    
+    def plotly_graph_update(self) -> None:
+        selected_samples = self.get_selected_samples()
+        df = self.gene_count_table.return_data_df(self.selected_genes, selected_samples).T
+        if df.shape[0] == 0:
+            return
+        fig = px.imshow(df, labels={'Geneid': 'Ensembl Gene ID',
+                                     'y': 'Sample ID',
+                                     'color': 'cpm'})
+        fig.update_layout({'yaxis_title':None,'xaxis_title':None, 'xaxis': {'tickfont':{'size':10},'tickangle':90}, 'yaxis': {'tickfont':{'size':10}}})
+        fig.update_layout(coloraxis_showscale=False)
+        self.browser.setHtml(fig.to_html(include_plotlyjs='cdn'))
+
 
     def export(self, _):
         # ----------------------- check if any sample selected ----------------------- #
@@ -423,9 +446,7 @@ class ui_window(QWidget):
         self.export_window = export_dialog(self)
         self.export_window.show()
 
-    def save(self, filepath: str, filename: str, fileformat: str) -> None:
-        self.export_window.close()
-        # ------------------------- export count table as csv ------------------------ #
+    def get_selected_samples(self):
         selected_samples = []
         if self.pv.isChecked():
             selected_samples += ["PV_1", "PV_2", "PV_3", "PV_4"]
@@ -467,6 +488,12 @@ class ui_window(QWidget):
             selected_samples += ["VIP_W1", "VIP_W2", "VIP_W3", "VIP_W4"]
         if self.grik.isChecked():
             selected_samples += ["Grik_W3", "Grik_W4", "Grik_W5", "Grik_W6"]
+        return selected_samples
+
+    def save(self, filepath: str, filename: str, fileformat: str) -> None:
+        self.export_window.close()
+        # ------------------------- export count table as csv ------------------------ #
+        selected_samples = self.get_Selected_samples()
         if self.gene_expression.isChecked():
             df = self.gene_count_table.return_df(self.selected_genes, selected_samples)
 
