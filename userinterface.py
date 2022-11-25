@@ -1,33 +1,22 @@
 import os
 
-from PyQt5 import QtGui, QtWebEngineWidgets
-from PyQt5.QtSvg import QSvgWidget
 import plotly.express as px
+from PyQt5 import QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (
-    QButtonGroup,
-    QCheckBox,
-    QVBoxLayout,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QListWidget,
-    QMessageBox,
-    QPushButton,
-    QRadioButton,
-    QWidget, 
-)
+from PyQt5.QtSvg import QSvgWidget
+from PyQt5.QtWidgets import (QButtonGroup, QCheckBox, QGridLayout, QHBoxLayout,
+                             QLabel, QLineEdit, QListWidget, QMessageBox,
+                             QPushButton, QRadioButton, QVBoxLayout, QWidget)
 
-from gene_table import get_true_filename, gene_count_table
 from export_dialog import export_dialog
+from gene_table import gene_count_table, get_true_filename
 
 
 class ui_window(QWidget):
     def __init__(
-        self,
-    ):
+        self, width: int, height: int
+    ):  
         super().__init__()
         myFont = QtGui.QFont()
         myFont.setBold(True)
@@ -89,12 +78,16 @@ class ui_window(QWidget):
         # ------------------------------ example picture ----------------------------- #
         self.overview = QLabel(self)
         self.pixmap = QPixmap(get_true_filename("overview_figure.png"))
-        self.pixmap_scaled = self.pixmap.scaled(735, 480, Qt.KeepAspectRatio)
+        self.image_height = int(round(height/2.5,0))
+        self.image_width = int(round(width/2.5,0))
+        self.pixmap_scaled = self.pixmap.scaled(self.image_height, self.image_width, Qt.KeepAspectRatio)
         self.overview.setPixmap(self.pixmap_scaled)
         self.rightcolumn.addWidget(self.overview, 0, 0, 2, 3)
         # ------------------------------- splice graph ------------------------------- #
-        self.splice_graph = QSvgWidget(get_true_filename("splicegraphs_5'.svg"))
-        self.splice_graph.setFixedSize(735,480)
+        self.splice_graph_pix = QPixmap(get_true_filename("splicegraphs_5'.svg"))
+        self.splice_graph_pix_scaled = self.splice_graph_pix.scaled(self.image_height, self.image_width, Qt.KeepAspectRatio)
+        self.splice_graph = QLabel(self)
+        self.splice_graph.setPixmap(self.splice_graph_pix_scaled)
         self.rightcolumn.addWidget(self.splice_graph, 3, 0, 2, 3)
         self.splicegraph_switch = QButtonGroup()
         self.splicegraph_layout = QHBoxLayout()
@@ -152,7 +145,7 @@ class ui_window(QWidget):
         self.excitatory_select.clicked.connect(self.radiobutton_pressed)
         self.celltype_layout.addWidget(self.excitatory_select)
         self.output_selection.addLayout(self.celltype_layout, 1, 0)
-        self.leftcolumn.addLayout(self.output_selection, 4, 0, 1, 3)
+        self.leftcolumn.addLayout(self.output_selection, 4, 0, 1, 2)
         # ---------------------------------- samples --------------------------------- #
         self.samples_layout = QGridLayout()
         self.samples_label = QLabel("Samples")
@@ -166,21 +159,21 @@ class ui_window(QWidget):
         self.samples_layout.addWidget(self.grik, 0, 2)
         self.pv = QCheckBox("PV")
         self.pv.setChecked(True)
-        self.samples_layout.addWidget(self.pv, 0, 3)
+        self.samples_layout.addWidget(self.pv, 1, 1)
         self.scnn = QCheckBox("Scnn1a")
         self.scnn.setChecked(True)
-        self.samples_layout.addWidget(self.scnn, 1, 1)
+        self.samples_layout.addWidget(self.scnn, 1, 2)
         self.sst = QCheckBox("SST")
         self.sst.setChecked(True)
-        self.samples_layout.addWidget(self.sst, 1, 2)
+        self.samples_layout.addWidget(self.sst, 2, 1)
         self.vip = QCheckBox("VIP")
         self.vip.setChecked(True)
-        self.samples_layout.addWidget(self.vip, 1, 3)
-        self.leftcolumn.addLayout(self.samples_layout, 5, 0, 1, 3)
+        self.samples_layout.addWidget(self.vip, 2, 2)
+        self.leftcolumn.addLayout(self.samples_layout, 5, 0, 1, 2)
         # ---------------------------------------------------------------------------- #
         #                             alternative splicing                             #
         # ---------------------------------------------------------------------------- #
-        # ---------------------------- chose analysis type --------------------------- #
+        # --------------------------- choose analysis type --------------------------- #
         self.switch_gene_expression_layout = QHBoxLayout()
         self.switch_gene_expression_label = QLabel("Analysis Type")
         self.switch_gene_expression_label.setFont(myFont)
@@ -206,16 +199,16 @@ class ui_window(QWidget):
         self.se = QCheckBox("Skipping Exon (SE)")
         self.splicing_events_layout.addWidget(self.se, 0, 2)
         self.me = QCheckBox("Mutually exclusive exon (MX)")
-        self.splicing_events_layout.addWidget(self.me, 0, 3)
+        self.splicing_events_layout.addWidget(self.me, 1, 1)
 
         self.ri = QCheckBox("Retained Intron (RI)")
-        self.splicing_events_layout.addWidget(self.ri, 1, 1)
+        self.splicing_events_layout.addWidget(self.ri, 1, 2)
         self.a5 = QCheckBox("Alternative 5' splice-site (A5)")
-        self.splicing_events_layout.addWidget(self.a5, 1, 2)
+        self.splicing_events_layout.addWidget(self.a5, 2, 1)
         self.a3 = QCheckBox("Alternative 3' splice-site (A3)")
-        self.splicing_events_layout.addWidget(self.a3, 1, 3)
+        self.splicing_events_layout.addWidget(self.a3, 2, 2)
         self.af = QCheckBox("Alternative first exon (AF)")
-        self.splicing_events_layout.addWidget(self.af, 2, 1)
+        self.splicing_events_layout.addWidget(self.af, 3, 1)
         self.splicing_events_checkboxes = [
             self.ie,
             self.se,
@@ -261,7 +254,7 @@ class ui_window(QWidget):
         self.copyright = QLabel("© Stephan Weißbach, 2022 - version 0.02")
         self.copyright.setFont(smallerFont)
         self.citationlayout.addWidget(self.copyright)
-        self.rightcolumn.addLayout(self.citationlayout, 6, 2)
+        self.rightcolumn.addLayout(self.citationlayout, 6, 0)
         self.mainwindowlayout.addLayout(self.leftcolumn, 0, 0)
         self.mainwindowlayout.addLayout(self.rightcolumn, 0, 1)
         # ---------------------------------------------------------------------------- #
