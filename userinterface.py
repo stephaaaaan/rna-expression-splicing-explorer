@@ -25,12 +25,12 @@ class ui_window(QWidget):
         self.selected_genes = []
         # --------------------------- initalize main window -------------------------- #
         self.setWindowTitle("Gene Expression Data")
-        # self.resize(1000, 500)
+        self.resize(width,height)
         # define layout
         self.mainwindowlayout = QGridLayout()
         self.setLayout(self.mainwindowlayout)
-        self.leftcolumn = QGridLayout()
-        self.rightcolumn = QGridLayout()
+        self.leftcolumn = QVBoxLayout()
+        self.rightcolumn = QVBoxLayout()
         # ---------------------------------------------------------------------------- #
         #                                    Widgets                                   #
         # ---------------------------------------------------------------------------- #
@@ -46,7 +46,6 @@ class ui_window(QWidget):
         # input for gene id
         self.input_field = QLineEdit()
         self.input_field.returnPressed.connect(self.add_to_list_func)
-        self.input_field.setMaximumWidth(200)
         self.input_field.textChanged.connect(self.input_changed)
         self.input_layout.addWidget(self.input_field, 1, 0)
         #
@@ -59,36 +58,35 @@ class ui_window(QWidget):
         self.add_to_list.clicked.connect(self.add_to_list_func)
         self.input_layout.addWidget(self.add_to_list, 1, 2)
         self.input_layout.setVerticalSpacing(10)
-        self.leftcolumn.addLayout(self.input_layout, 0, 0, 1, 3)
+        self.leftcolumn.addLayout(self.input_layout)
         # ---------------------------- gene selection list --------------------------- #
         self.selected_genes_list_desc = QLabel("Selected Genes")
         self.selected_genes_list_desc.setFont(myFont)
-        self.leftcolumn.addWidget(self.selected_genes_list_desc, 1, 0)
+        self.leftcolumn.addWidget(self.selected_genes_list_desc)
         # list showing selection
         self.selected_genes_list = QListWidget()
-        self.leftcolumn.addWidget(self.selected_genes_list, 2, 0, 2, 2)
+        self.leftcolumn.addWidget(self.selected_genes_list)
         self.selected_genes_list.clicked.connect(self.activate_delete)
         # button delete
         self.delete = QPushButton("Delete", self)
         self.delete.setEnabled(False)
         self.delete.clicked.connect(self.delete_item)
-        self.leftcolumn.addWidget(self.delete, 2, 2, 1, 1)
+        self.leftcolumn.addWidget(self.delete)
         # output selection
         self.output_selection = QGridLayout()
         # ------------------------------ example picture ----------------------------- #
         self.overview = QLabel(self)
         self.pixmap = QPixmap(get_true_filename("overview_figure.png"))
-        self.image_height = int(round(height/2.5,0))
-        self.image_width = int(round(width/2.5,0))
-        self.pixmap_scaled = self.pixmap.scaled(self.image_height, self.image_width, Qt.KeepAspectRatio)
+        self.image_width = int(round(width/3,0))
+        self.pixmap_scaled = self.pixmap.scaledToWidth(self.image_width)
         self.overview.setPixmap(self.pixmap_scaled)
-        self.rightcolumn.addWidget(self.overview, 0, 0, 2, 3)
+        self.rightcolumn.addWidget(self.overview)
         # ------------------------------- splice graph ------------------------------- #
         self.splice_graph_pix = QPixmap(get_true_filename("splicegraphs_5'.svg"))
-        self.splice_graph_pix_scaled = self.splice_graph_pix.scaled(self.image_height, self.image_width, Qt.KeepAspectRatio)
+        self.splice_graph_pix_scaled = self.splice_graph_pix.scaledToWidth(self.image_width)
         self.splice_graph = QLabel(self)
         self.splice_graph.setPixmap(self.splice_graph_pix_scaled)
-        self.rightcolumn.addWidget(self.splice_graph, 3, 0, 2, 3)
+        self.rightcolumn.addWidget(self.splice_graph)
         self.splicegraph_switch = QButtonGroup()
         self.splicegraph_layout = QHBoxLayout()
         self.splicegraph_switch_label = QLabel('Choose Strand')
@@ -103,8 +101,8 @@ class ui_window(QWidget):
         self.three_dash.clicked.connect(self.change_splicegraph)
         self.splicegraph_switch.addButton(self.three_dash)
         self.splicegraph_layout.addWidget(self.three_dash)
-        self.rightcolumn.addLayout(self.splicegraph_layout,5,0)
-        
+        self.rightcolumn.addLayout(self.splicegraph_layout)
+        self.rightcolumn.addStretch(100)
         # ------------------------------- brain region ------------------------------- #
         self.brainregion_layout = QHBoxLayout()
         self.brainregion_button_group = QButtonGroup()
@@ -145,7 +143,7 @@ class ui_window(QWidget):
         self.excitatory_select.clicked.connect(self.radiobutton_pressed)
         self.celltype_layout.addWidget(self.excitatory_select)
         self.output_selection.addLayout(self.celltype_layout, 1, 0)
-        self.leftcolumn.addLayout(self.output_selection, 4, 0, 1, 2)
+        self.leftcolumn.addLayout(self.output_selection)
         # ---------------------------------- samples --------------------------------- #
         self.samples_layout = QGridLayout()
         self.samples_label = QLabel("Samples")
@@ -169,7 +167,7 @@ class ui_window(QWidget):
         self.vip = QCheckBox("VIP")
         self.vip.setChecked(True)
         self.samples_layout.addWidget(self.vip, 2, 2)
-        self.leftcolumn.addLayout(self.samples_layout, 5, 0, 1, 2)
+        self.leftcolumn.addLayout(self.samples_layout)
         # ---------------------------------------------------------------------------- #
         #                             alternative splicing                             #
         # ---------------------------------------------------------------------------- #
@@ -188,7 +186,7 @@ class ui_window(QWidget):
         self.switch_gene_expression.addButton(self.alternative_splicing)
         self.alternative_splicing.clicked.connect(self.switch_gene_expression_clicked)
         self.switch_gene_expression_layout.addWidget(self.alternative_splicing)
-        self.leftcolumn.addLayout(self.switch_gene_expression_layout, 6, 0)
+        self.leftcolumn.addLayout(self.switch_gene_expression_layout)
         # -------------------- select splicing events of interest -------------------- #
         self.splicing_events_layout = QGridLayout()
         self.splicing_events_label = QLabel("Splicing Events")
@@ -222,46 +220,49 @@ class ui_window(QWidget):
             checkbox.setChecked(True)
             checkbox.setCheckable(False)
             checkbox.setToolTip("Select Analysis Type 'alternative splicing'")
-        self.leftcolumn.addLayout(self.splicing_events_layout, 7, 0, 1, 4)
+        self.leftcolumn.addLayout(self.splicing_events_layout)
 
         # ---------------------------------- export ---------------------------------- #
         self.export_btn = QPushButton("export")
         self.export_btn.clicked.connect(self.export)
-        self.leftcolumn.addWidget(self.export_btn, 8, 0)
+        self.leftcolumn.addWidget(self.export_btn)
         # --------------------------------- Citation --------------------------------- #
-        self.citationlayout = QVBoxLayout()
+        self.citationlayout = QGridLayout()
         smallFont = QtGui.QFont()
         smallFont.setPointSize(10)
         self.original_study_label = QLabel("Original Study")
         self.original_study_label.setFont(myFont)
-        self.citationlayout.addWidget(self.original_study_label)
-        urlLink = '<a href="https://doi.org/10.1038/s41593-019-0465-5">Furlanis, E., Traunmüller, L., Fucile, G. et al., Nat Neurosci 22 (2019)</a>'
+        self.citationlayout.addWidget(self.original_study_label,0,0)
+        urlLink = '<a href="https://doi.org/10.1038/s41593-019-0465-5">Furlanis et al., Nat Neurosci 22 (2019)</a>'
         self.original_study = QLabel(urlLink)
         self.original_study.setOpenExternalLinks(True)
         self.original_study.setFont(smallFont)
-        self.citationlayout.addWidget(self.original_study)
+        self.citationlayout.addWidget(self.original_study,0,1)
+        self.citationlayout.rowStretch(0)
         self.original_data_label = QLabel("Raw Data")
         self.original_data_label.setFont(myFont)
-        self.citationlayout.addWidget(self.original_data_label)
-        urlLink2 = '<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE133291">FASTA files</a>'
+        self.citationlayout.addWidget(self.original_data_label,1,0)
+        urlLink2 = '<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE133291">GSE133291</a>'
         self.original_data = QLabel(urlLink2)
         self.original_data.setOpenExternalLinks(True)
         self.original_data.setFont(smallFont)
-        self.citationlayout.addWidget(self.original_data)
+        self.citationlayout.addWidget(self.original_data,1,1)
         smallerFont = smallFont
         smallerFont.setPointSize(8)
         smallerFont.setItalic(True)
         self.copyright = QLabel("© Stephan Weißbach, 2022 - version 0.02")
         self.copyright.setFont(smallerFont)
-        self.citationlayout.addWidget(self.copyright)
-        self.rightcolumn.addLayout(self.citationlayout, 6, 0)
+        self.citationlayout.addWidget(self.copyright,2,0)
+        self.rightcolumn.addLayout(self.citationlayout)
         self.mainwindowlayout.addLayout(self.leftcolumn, 0, 0)
         self.mainwindowlayout.addLayout(self.rightcolumn, 0, 1)
         # ---------------------------------------------------------------------------- #
         #                            gene expression heatmap                           #
         # ---------------------------------------------------------------------------- #
         self.browser = QtWebEngineWidgets.QWebEngineView(self)
-        self.browser.setMinimumSize(500,100)
+        self.browser.setMinimumSize(self.image_width,int(height*0.9))
+        self.browser.setMaximumSize(self.image_width,int(height*0.9))
+        #self.browser.setMinimumSize(500,100)
         self.mainwindowlayout.addWidget(self.browser,0,2)
 
     # ---------------------------------------------------------------------------- #
@@ -324,14 +325,15 @@ class ui_window(QWidget):
         self.delete.setEnabled(True)
     
     def change_splicegraph(self) -> None:
-        self.rightcolumn.itemAtPosition(3,0).widget().deleteLater()
+        self.rightcolumn.itemAt(1).widget().deleteLater()
         if self.five_dash.isChecked():
-            
-            self.splice_graph = QSvgWidget(get_true_filename("splicegraphs_5'.svg"))
+            self.splice_graph_pix = QPixmap(get_true_filename("splicegraphs_5'.svg"))
         else:
-            self.splice_graph = QSvgWidget(get_true_filename("splicegraphs_3'.svg"))
-        self.splice_graph.setFixedSize(735,480)
-        self.rightcolumn.addWidget(self.splice_graph, 3, 0, 2, 3)
+            self.splice_graph_pix = QPixmap(get_true_filename("splicegraphs_3'.svg"))
+        self.splice_graph_pix_scaled = self.splice_graph_pix.scaledToWidth(self.image_width)
+        self.splice_graph = QLabel(self)
+        self.splice_graph.setPixmap(self.splice_graph_pix_scaled)
+        self.rightcolumn.insertWidget(1,self.splice_graph)
 
     def radiobutton_pressed(self) -> None:
         if self.inhibitory_select.isChecked() and self.crtx_select.isChecked():
