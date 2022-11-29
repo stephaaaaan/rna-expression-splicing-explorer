@@ -7,6 +7,7 @@ A simple programm to access RNA expression and alternative splicing profiles for
 3. Select analysis type (gene expression / alternative splicing)
 The programm will export a csv/xlsx file including the <b>counts per million</b> (gene expression) or <b>percentage spliced in</b> (alternative splicing) 
 values for all selected genes. An interactive heatmap representing gene expression values of all selected genes is generated within the programm.
+![Screenshot of the GUI](https://github.com/stephaaaaan/rna-expression-splicing-explorer/blob/main/src/pics/gui_screenshot.png)
 
 ## Celltypes included
 The celltypes are:
