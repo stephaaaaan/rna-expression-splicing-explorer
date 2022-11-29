@@ -14,12 +14,12 @@ def get_true_filename(filename):
 
 class gene_count_table:
     def __init__(self) -> None:
-        self.count_table = pd.read_csv(get_true_filename("count_table.csv"))
+        self.count_table = pd.read_csv(get_true_filename("src/data/furlanis_count_table.csv"))
         self.count_table.index = self.count_table["Geneid"]
         self.alternative_splicing_table = pd.read_csv(
-            get_true_filename("all_samples_psi.csv")
+            get_true_filename("src/data/furlanis_alternative_splicing.csv")
         )
-        with open(get_true_filename("sample_metadata.json"), "r") as f:
+        with open(get_true_filename("src/utils/sample_metadata.json"), "r") as f:
             self.sample_metadata = json.load(f)
         self.default_list = [
             "CamK_1",
@@ -59,7 +59,7 @@ class gene_count_table:
             self.count_table[col] = (
                 self.count_table[col] / self.count_table[col].sum()
             ) * 1_000_000
-        with open(get_true_filename("ensembl_to_gene_symbol.json"), "r") as f:
+        with open(get_true_filename("src/utils/ensembl_to_gene_symbol.json"), "r") as f:
             self.ensembl_to_gene_symbol = json.load(f)
         self.gene_symbol_to_ensembl = {
             v: k for k, v in self.ensembl_to_gene_symbol.items()

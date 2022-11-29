@@ -1,26 +1,21 @@
 package:
-  name: RNAHippExplorer
+  name: rna-hipp-explorer
   version: 0.0.2
 
 source:
-  git_url: https://github.com/stephaaaaan/RNAHippExplorer.git
+  git_url: git@github.com:stephaaaaan/RNAHippExplorer.git
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
-    - pandas
-    - PyQt5
-    - PyQtWebEngine
-    - json
-
+  build:
+    - python
   run:
     - python
-
-test:
-  imports:
-    -
-
+    - pandas
+    - pyqt
+    - PyQtWebEngine
 about:
   home: https://github.com/stephaaaaan/RNAHippExplorer
   license: MIT

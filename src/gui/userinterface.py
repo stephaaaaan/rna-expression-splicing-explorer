@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import (QButtonGroup, QCheckBox, QGridLayout, QHBoxLayout,
                              QLabel, QLineEdit, QListWidget, QMessageBox,
                              QPushButton, QRadioButton, QVBoxLayout, QWidget)
 
-from export_dialog import export_dialog
-from gene_table import gene_count_table, get_true_filename
+from src.gui.export_dialog import export_dialog
+from src.furlanis_data_class import gene_count_table, get_true_filename
 
 
 class ui_window(QWidget):
@@ -76,14 +76,14 @@ class ui_window(QWidget):
         # ------------------------------ example picture ----------------------------- #
         self.overview = QLabel(self)
         self.pixmap = QPixmap(1463 ,655)
-        self.pixmap.load(get_true_filename("overview_figure.png"))
+        self.pixmap.load(get_true_filename("src/pics/overview_figure.png"))
         self.image_width = int(round(width/3.5,0))
         self.pixmap_scaled = self.pixmap.scaledToWidth(self.image_width, mode=Qt.SmoothTransformation)
         self.overview.setPixmap(self.pixmap_scaled)
         self.rightcolumn.addWidget(self.overview)
         # ------------------------------- splice graph ------------------------------- #
         self.splice_graph_pix = QPixmap(1920, 1380)
-        self.splice_graph_pix.load(get_true_filename("splicegraphs_5'.svg"))
+        self.splice_graph_pix.load(get_true_filename("src/pics/splicegraphs_5'.svg"))
         self.splice_graph_pix_scaled = self.splice_graph_pix.scaledToWidth(self.image_width, mode=Qt.SmoothTransformation)
         self.splice_graph = QLabel(self)
         self.splice_graph.setPixmap(self.splice_graph_pix_scaled)
@@ -251,7 +251,7 @@ class ui_window(QWidget):
         smallerFont = smallFont
         smallerFont.setPointSize(8)
         smallerFont.setItalic(True)
-        self.copyright = QLabel("© Stephan Weißbach, 2022 - version 0.02")
+        self.copyright = QLabel("© Stephan Weißbach, 2022 - version 0.0.2")
         self.copyright.setFont(smallerFont)
         self.citationlayout.addWidget(self.copyright,2,0)
         self.rightcolumn.addLayout(self.citationlayout)
@@ -329,9 +329,9 @@ class ui_window(QWidget):
         self.rightcolumn.itemAt(1).widget().deleteLater()
         self.splice_graph_pix = QPixmap(1920, 1380)
         if self.five_dash.isChecked():
-            self.splice_graph_pix.load(get_true_filename("splicegraphs_5'.svg"))
+            self.splice_graph_pix.load(get_true_filename("src/pics/splicegraphs_5'.svg"))
         else:
-            self.splice_graph_pix.load(get_true_filename("splicegraphs_3'.svg"))
+            self.splice_graph_pix.load(get_true_filename("src/pics/splicegraphs_3'.svg"))
         self.splice_graph_pix_scaled = self.splice_graph_pix.scaledToWidth(self.image_width, mode=Qt.SmoothTransformation)
         self.splice_graph = QLabel(self)
         self.splice_graph.setPixmap(self.splice_graph_pix_scaled)

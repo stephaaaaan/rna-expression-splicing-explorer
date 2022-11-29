@@ -3,8 +3,8 @@ import sys
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QSplashScreen
 
-from gene_table import get_true_filename
-from userinterface import ui_window
+from src.furlanis_data_class import get_true_filename
+from src.gui.userinterface import ui_window
 
 
 def main():
