@@ -1,25 +1,8 @@
 import os
 import sys
-from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import (
-    QApplication,
-    QButtonGroup,
-    QCheckBox,
-    QVBoxLayout,
-    QFileDialog,
-    QFrame,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QListWidget,
-    QMessageBox,
-    QPushButton,
-    QComboBox,
-    QWidget,
-)
+
+from PyQt5.QtWidgets import (QComboBox, QFileDialog, QGridLayout, QLabel,
+                             QLineEdit, QMessageBox, QPushButton, QWidget)
 
 
 class export_dialog(QWidget):
@@ -39,6 +22,8 @@ class export_dialog(QWidget):
             desktop_path = os.path.join(
                 os.path.join(os.path.expanduser("~")), "Desktop"
             )
+        elif sys.platform == "darwin":
+            desktop_path = os.path.join(os.path.join(os.path.expanduser("~")), "Desktop")
         else:
             desktop_path = os.path.join(
                 os.path.join(os.environ["USERPROFILE"]), "Desktop"

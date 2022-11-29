@@ -4,7 +4,6 @@ import plotly.express as px
 from PyQt5 import QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import (QButtonGroup, QCheckBox, QGridLayout, QHBoxLayout,
                              QLabel, QLineEdit, QListWidget, QMessageBox,
                              QPushButton, QRadioButton, QVBoxLayout, QWidget)
@@ -76,14 +75,16 @@ class ui_window(QWidget):
         self.output_selection = QGridLayout()
         # ------------------------------ example picture ----------------------------- #
         self.overview = QLabel(self)
-        self.pixmap = QPixmap(get_true_filename("overview_figure.png"))
-        self.image_width = int(round(width/3,0))
-        self.pixmap_scaled = self.pixmap.scaledToWidth(self.image_width)
+        self.pixmap = QPixmap(1463 ,655)
+        self.pixmap.load(get_true_filename("overview_figure.png"))
+        self.image_width = int(round(width/3.5,0))
+        self.pixmap_scaled = self.pixmap.scaledToWidth(self.image_width, mode=Qt.SmoothTransformation)
         self.overview.setPixmap(self.pixmap_scaled)
         self.rightcolumn.addWidget(self.overview)
         # ------------------------------- splice graph ------------------------------- #
-        self.splice_graph_pix = QPixmap(get_true_filename("splicegraphs_5'.svg"))
-        self.splice_graph_pix_scaled = self.splice_graph_pix.scaledToWidth(self.image_width)
+        self.splice_graph_pix = QPixmap(1920, 1380)
+        self.splice_graph_pix.load(get_true_filename("splicegraphs_5'.svg"))
+        self.splice_graph_pix_scaled = self.splice_graph_pix.scaledToWidth(self.image_width, mode=Qt.SmoothTransformation)
         self.splice_graph = QLabel(self)
         self.splice_graph.setPixmap(self.splice_graph_pix_scaled)
         self.rightcolumn.addWidget(self.splice_graph)
@@ -326,11 +327,12 @@ class ui_window(QWidget):
     
     def change_splicegraph(self) -> None:
         self.rightcolumn.itemAt(1).widget().deleteLater()
+        self.splice_graph_pix = QPixmap(1920, 1380)
         if self.five_dash.isChecked():
-            self.splice_graph_pix = QPixmap(get_true_filename("splicegraphs_5'.svg"))
+            self.splice_graph_pix.load(get_true_filename("splicegraphs_5'.svg"))
         else:
-            self.splice_graph_pix = QPixmap(get_true_filename("splicegraphs_3'.svg"))
-        self.splice_graph_pix_scaled = self.splice_graph_pix.scaledToWidth(self.image_width)
+            self.splice_graph_pix.load(get_true_filename("splicegraphs_3'.svg"))
+        self.splice_graph_pix_scaled = self.splice_graph_pix.scaledToWidth(self.image_width, mode=Qt.SmoothTransformation)
         self.splice_graph = QLabel(self)
         self.splice_graph.setPixmap(self.splice_graph_pix_scaled)
         self.rightcolumn.insertWidget(1,self.splice_graph)
@@ -512,7 +514,7 @@ class ui_window(QWidget):
     def save(self, filepath: str, filename: str, fileformat: str) -> None:
         self.export_window.close()
         # ------------------------- export count table as csv ------------------------ #
-        selected_samples = self.get_Selected_samples()
+        selected_samples = self.get_selected_samples()
         if self.gene_expression.isChecked():
             df = self.gene_count_table.return_df(self.selected_genes, selected_samples)
 

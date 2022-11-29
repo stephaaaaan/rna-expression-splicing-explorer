@@ -1,10 +1,9 @@
 import sys
-import time
 
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QSplashScreen
 
-from gene_table import gene_count_table, get_true_filename
+from gene_table import get_true_filename
 from userinterface import ui_window
 
 

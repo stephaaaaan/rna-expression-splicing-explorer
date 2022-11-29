@@ -1,0 +1,27 @@
+package:
+  name: RNAHippExplorer
+  version: 0.0.2
+
+source:
+  git_url: https://github.com/stephaaaaan/RNAHippExplorer.git
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - pandas
+    - PyQt5
+    - PyQtWebEngine
+    - json
+
+  run:
+    - python
+
+test:
+  imports:
+    -
+
+about:
+  home: https://github.com/stephaaaaan/RNAHippExplorer
+  license: MIT
+  summary: 'Browse RNA expression and alternative splicing for Hippocampus & Cortex'
