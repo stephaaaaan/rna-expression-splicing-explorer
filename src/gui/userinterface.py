@@ -23,7 +23,7 @@ class ui_window(QWidget):
         self.gene_count_table = gene_count_table()
         self.selected_genes = []
         # --------------------------- initalize main window -------------------------- #
-        self.setWindowTitle("Gene Expression Data")
+        self.setWindowTitle("Gene Expression and Splicing Explorer")
         self.resize(width,height)
         # define layout
         self.mainwindowlayout = QGridLayout()
