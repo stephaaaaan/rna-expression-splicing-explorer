@@ -1,9 +1,10 @@
 package:
-  name: rna-hipp-explorer
+  name: rna-expression-splicing-explorer
   version: 0.0.2
 
 source:
-  git_url: git@github.com:stephaaaaan/RNAHippExplorer.git
+  git_url: https://github.com/stephaaaaan/rna-expression-splicing-explorer.git
+  git_rev: main
 
 requirements:
   host:
